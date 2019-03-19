@@ -126,15 +126,37 @@ $(document).ready(function () {
         displayNotification();
     });
 
+    // Untuk cek online atau tidak
+    function isOnline(){
+        var connectionStatus = $('#connection-status');
+        if(navigator.onLine){
+            connectionStatus.html = '<p>anda online</p>';
+        } else {
+            connectionStatus.html = '<p>anda offline</p>';
+        }
+    }
+
+    window.addEventListener('online', isOnline);
+    window.addEventListener('offline', isOnline);
+    isOnline();
 });
 
 
 if ('serviceWorker' in navigator){
     window.addEventListener('load', function () {
         navigator.serviceWorker.register('/serviceworker.js').then(function (reg) {
-            console.log('SW regis sukses dgn skop',reg.scope)
+            // console.log('SW regis sukses dgn skop',reg.scope)
+            return navigator.serviceWorker.ready;
+        }).then(function(reg){
+            document.getElementById('req-sync').addEventListener('click', function (){
+                reg.sync.register('image-fetch').then(() => {
+                    console.log('sync-registered');
+                }).catch(function(err){
+                    console.log('unable to fetch image. Error: ', err);
+                });
+            });
         }, function (err) {
-            console.log('SW regis failed',err);
-        })
+            console.log('unable to register service worker, Error : ',err);
+        });
     })
 } 

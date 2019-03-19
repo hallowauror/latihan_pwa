@@ -91,8 +91,26 @@ self.addEventListener('notificationclick', function(e){
     if(action === 'close'){
         notification.close();
     } else {
-        clients.openWindow('http://google.com');
+        clients.openWindow('https://github.com/hallowauror');
         notification.close();
     }
 });
 
+self.addEventListener('sync', function(event){
+    console.log('firing sync');
+    if(event.tag === 'image-fetch'){
+        console.log('sync event fired');
+        event.waitUntil(fetchImage());
+    }
+});
+
+function fetchImage(){
+    console.log('firing : doSomeStuff()');
+    fetch('/images/logo.png').then(function(response){
+        return response;
+    }).then(function(text){
+        console.log('Request success', text);
+    }).catch(function (err){
+        console.log('Request faild', err);
+    });
+}
